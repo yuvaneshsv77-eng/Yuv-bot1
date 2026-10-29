@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuv Bot — Chat with Yuvanesh SV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #08090B;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #E6E7EB;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: #6366F1; color: #fff; }
+  a { text-decoration: none; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px;
+    background: rgba(8,9,11,0.75);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #16171C;
+  }
+  .nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: #fff; cursor: pointer; }
+  .nav .brand .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #6366F1, #22D3EE);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff;
+  }
+  .nav .cta {
+    font-size: 13px; font-weight: 600; color: #fff;
+    background: linear-gradient(135deg, #6366F1, #4F46E5);
+    padding: 9px 18px; border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.25);
+    border: none; cursor: pointer;
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .view.active { animation: fadein 0.35s ease; }
+
+  .hero {
+    position: relative;
+    min-height: calc(100vh - 68px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px 70px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    top: -180px; left: 50%; transform: translateX(-50%);
+    width: 640px; height: 420px;
+    background: radial-gradient(ellipse at center, rgba(99,102,241,0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 500; color: #A5A8FF;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.28);
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 22px;
+    position: relative; z-index: 1;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; box-shadow: 0 0 6px #34D399; }
+  .hero h1 {
+    font-size: clamp(34px, 5.5vw, 56px);
+    font-weight: 800;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
+    position: relative; z-index: 1;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, #818CF8, #22D3EE);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p {
+    max-width: 480px;
+    margin: 0 auto 40px;
+    font-size: 15.5px;
+    color: #9295A0;
+    line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+
+  .float-field {
+    position: relative;
+    max-width: 620px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: 240px;
+    z-index: 1;
+  }
+  .float-item {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #D3D5DC;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 11px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    animation: floaty 5s ease-in-out infinite;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+  }
+  .float-item:hover {
+    border-color: #6366F1;
+    box-shadow: 0 12px 34px rgba(99,102,241,0.28);
+    transform: translateY(-4px) scale(1.04);
+  }
+  .float-item .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .float-item.f1 { top: 0%;   left: 6%;  animation-delay: 0s; }
+  .float-item.f2 { top: 6%;   left: 60%; animation-delay: 0.6s; }
+  .float-item.f3 { top: 42%;  left: 0%;  animation-delay: 1.2s; }
+  .float-item.f4 { top: 40%;  left: 68%; animation-delay: 0.3s; }
+  .float-item.f5 { top: 78%;  left: 16%; animation-delay: 0.9s; }
+  .float-item.f6 { top: 76%;  left: 56%; animation-delay: 1.5s; }
+  .float-item.center {
+    position: relative;
+    display: inline-flex;
+    margin: 0 auto;
+    top: auto; left: auto;
+    background: linear-gradient(135deg, #6366F1, #4F46E5);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    padding: 14px 26px;
+    font-size: 14px;
+    animation: pulse 2.6s ease-in-out infinite;
+    box-shadow: 0 12px 34px rgba(99,102,241,0.35);
+  }
+  .center-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+
+  @keyframes floaty { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 12px 34px rgba(99,102,241,0.35); }
+    50% { box-shadow: 0 12px 44px rgba(99,102,241,0.55); }
+  }
+
+  @media (max-width: 640px) {
+    .float-field { min-height: 340px; }
+    .float-item { font-size: 12px; padding: 9px 14px; }
+    .float-item.f1 { top: 0%;  left: 2%; }
+    .float-item.f2 { top: 8%;  left: 54%; }
+    .float-item.f3 { top: 36%; left: 0%; }
+    .float-item.f4 { top: 36%; left: 58%; }
+    .float-item.f5 { top: 70%; left: 6%; }
+    .float-item.f6 { top: 70%; left: 52%; }
+  }
+
+  .landing-footer { text-align: center; padding: 20px; font-size: 12px; color: #4B4E58; }
+
+  .boot-screen {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .boot-glow {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 520px; height: 520px;
+    background: radial-gradient(ellipse at center, rgba(52,211,153,0.14), transparent 65%);
+    pointer-events: none;
+    animation: glowpulse 2.4s ease-in-out infinite;
+  }
+  @keyframes glowpulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+  .boot-icon {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: #101116; border: 1px solid #1E2A24;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 26px; position: relative; z-index: 1;
+    animation: bootbob 1.8s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(52,211,153,0.35);
+  }
+  @keyframes bootbob {
+    0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 rgba(52,211,153,0.3); }
+    50% { transform: translateY(-6px); box-shadow: 0 0 0 10px rgba(52,211,153,0); }
+  }
+  .boot-text {
+    font-size: 15px; font-weight: 500; color: #C9CCD4;
+    position: relative; z-index: 1;
+    min-height: 22px;
+    animation: textfade 0.4s ease;
+  }
+  @keyframes textfade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .boot-bar {
+    width: 200px; height: 3px; border-radius: 3px;
+    background: #17181D; margin-top: 22px; overflow: hidden;
+    position: relative; z-index: 1;
+  }
+  .boot-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #34D399, #22D3EE);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .auth-tab {
+    flex: 1;
+    background: none; border: none;
+    color: #71747E; font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 0; border-radius: 9px; cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .auth-tab-active { background: #1C1D22; color: #fff; }
+  .auth-tabs { display: flex; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; margin-bottom: 20px; backdrop-filter: blur(8px); }
+  .auth-label { font-size: 12px; color: #9295A0; font-weight: 500; display: block; margin-bottom: 6px; }
+  .auth-input {
+    width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px;
+    color: #E6E7EB; font-size: 14px; padding: 13px 16px; outline: none; font-family: inherit;
+    box-sizing: border-box; transition: border-color 0.15s ease, background 0.15s ease;
+    backdrop-filter: blur(8px);
+  }
+  .auth-input:focus { border-color: #6366F1; background: rgba(255,255,255,0.05); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .login-screen {
+    position: relative;
+    min-height: calc(100vh - 68px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden;
+  }
+  .login-glow {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 620px; height: 480px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(52,211,153,0.10), transparent 60%),
+                radial-gradient(ellipse at 70% 70%, rgba(99,102,241,0.12), transparent 60%);
+    pointer-events: none;
+  }
+  .login-card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    background: rgba(20, 21, 26, 0.55);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 36px 32px 30px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+  }
+  .login-icon {
+    width: 60px; height: 60px; border-radius: 16px;
+    background: #101116; border: 1px solid #1E2A24;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+  }
+  .login-title { font-size: 21px; font-weight: 800; color: #fff; text-align: center; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .login-subtitle { font-size: 13px; color: #8A8D97; text-align: center; margin: 0 0 26px; }
+  .google-btn {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #E6E7EB;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    padding: 12px 16px; border-radius: 12px; cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    backdrop-filter: blur(8px);
+  }
+  .google-btn:hover { border-color: #3A3DFF44; background: rgba(255,255,255,0.07); }
+  .login-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0 20px;
+    font-size: 11.5px; color: #565A66;
+  }
+  .login-divider::before, .login-divider::after {
+    content: ''; flex: 1; height: 1px; background: #1C1D22;
+  }
+  .login-footnote { margin-top: 18px; font-size: 11px; color: #4B4E58; text-align: center; line-height: 1.6; }
+
+  .chat-app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: calc(100vh - 68px);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .sidebar {
+    background: rgba(12,13,16,0.6);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 24px 20px;
+    display: flex; flex-direction: column; gap: 24px;
+    overflow-y: auto;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: #8A8D97; background: none; border: none; cursor: pointer;
+    padding: 6px 2px; font-family: inherit;
+  }
+  .back-link:hover { color: #fff; }
+  .back-link svg { width: 14px; height: 14px; }
+
+  .profile-card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 22px 18px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+  }
+  .profile-avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, #6366F1, #22D3EE);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 19px; color: #fff;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+  }
+  .profile-card .name { font-size: 15.5px; font-weight: 700; color: #FFFFFF; }
+  .profile-card .role { font-size: 12px; color: #8A8D97; margin-top: 4px; line-height: 1.5; }
+  .profile-card .status-pill {
+    margin: 12px auto 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    color: #34D399;
+    font-size: 10.5px; font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+  .profile-card .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; box-shadow: 0 0 6px #34D399; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box {
+    background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 11px; padding: 11px 12px; backdrop-filter: blur(10px);
+  }
+  .stat-box .num { font-size: 16px; font-weight: 700; color: #FFFFFF; }
+  .stat-box .lbl { font-size: 10.5px; color: #71747E; margin-top: 2px; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: #565A66; padding: 0 4px;
+  }
+  .topic-list { display: flex; flex-direction: column; gap: 6px; }
+  .topic-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 11px; border-radius: 10px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    color: #C9CCD4; font-size: 12.5px; font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    backdrop-filter: blur(8px);
+  }
+  .topic-item:hover { transform: translateX(3px); border-color: #3A3DFF44; background: rgba(255,255,255,0.06); }
+  .topic-item .icon-wrap {
+    width: 24px; height: 24px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .topic-item .icon-wrap svg { width: 13px; height: 13px; }
+  .topic-item:nth-child(1) .icon-wrap { background: rgba(99,102,241,0.15); color: #818CF8; }
+  .topic-item:nth-child(2) .icon-wrap { background: rgba(34,211,238,0.15); color: #22D3EE; }
+  .topic-item:nth-child(3) .icon-wrap { background: rgba(52,211,153,0.15); color: #34D399; }
+  .topic-item:nth-child(4) .icon-wrap { background: rgba(251,191,36,0.15); color: #FBBF24; }
+  .topic-item:nth-child(5) .icon-wrap { background: rgba(244,114,182,0.15); color: #F472B6; }
+  .topic-item:nth-child(6) .icon-wrap { background: rgba(129,140,248,0.15); color: #A78BFA; }
+
+  .sidebar-footer {
+    margin-top: auto; font-size: 11px; color: #4B4E58;
+    text-align: center; padding-top: 10px; border-top: 1px solid #17181D;
+  }
+
+  .main { display: flex; flex-direction: column; height: 100%; background: #08090B; }
+  .topbar {
+    padding: 20px 28px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.015);
+    backdrop-filter: blur(10px);
+  }
+  .topbar .title { font-size: 15px; font-weight: 600; color: #FFFFFF; }
+  .topbar .subtitle { font-size: 12px; color: #71747E; margin-top: 2px; }
+  .badge {
+    font-size: 10.5px; color: #8A8DFF; background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.3); padding: 4px 10px; border-radius: 999px; font-weight: 500;
+  }
+
+  .thread {
+    flex: 1; overflow-y: auto; padding: 26px 28px 10px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .thread::-webkit-scrollbar { width: 6px; }
+  .thread::-webkit-scrollbar-thumb { background: #1E1F26; border-radius: 3px; }
+
+  .empty-state { margin: auto; text-align: center; max-width: 360px; }
+  .empty-state .big-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366F1, #22D3EE);
+    margin: 0 auto 18px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 19px; color: #fff;
+  }
+  .empty-state h2 { font-size: 16.5px; font-weight: 700; margin: 0 0 8px; color: #FFFFFF; }
+  .empty-state p { font-size: 13.5px; color: #8A8D97; line-height: 1.7; margin: 0; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg-row { display: flex; animation: rise 0.25s ease; }
+  .msg-row.user { justify-content: flex-end; }
+  .bubble { max-width: 74%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.65; }
+  .msg-row.user .bubble { background: linear-gradient(135deg, #6366F1, #4F46E5); color: #FFFFFF; border-bottom-right-radius: 4px; }
+  .msg-row.bot .bubble { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #E6E7EB; border-bottom-left-radius: 4px; backdrop-filter: blur(10px); }
+  .bubble .tag {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+    font-size: 10.5px; letter-spacing: 0.03em; text-transform: uppercase; color: #8A8DFF;
+    background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25);
+    padding: 4px 9px; border-radius: 20px; font-weight: 500;
+  }
+  .bubble.loading { color: #6C707B; }
+  .stream-cursor {
+    display: inline-block;
+    width: 6px; height: 13px;
+    background: #8A8DFF;
+    margin-left: 2px;
+    vertical-align: -2px;
+    animation: cursorblink 0.9s step-end infinite;
+  }
+  @keyframes cursorblink { 50% { opacity: 0; } }
+  .typing-dots span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #6C707B; margin-right: 3px; animation: bounce 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+  .composer { padding: 6px 28px 24px; display: flex; gap: 10px; }
+  .composer-inner {
+    flex: 1; display: flex; align-items: center;
+    background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px;
+    padding: 4px 6px 4px 18px; transition: border-color 0.15s ease, background 0.15s ease;
+    backdrop-filter: blur(10px);
+  }
+  .composer-inner:focus-within { border-color: #6366F1; background: rgba(255,255,255,0.05); }
+  .composer-inner input { flex: 1; background: transparent; border: none; outline: none; color: #E6E7EB; font-size: 14px; padding: 10px 0; }
+  .composer-inner input::placeholder { color: #565A66; }
+  .send-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, #6366F1, #4F46E5); color: #fff;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+  .send-btn:hover:not(:disabled) { transform: scale(1.04); }
+  .send-btn:disabled { opacity: 0.4; cursor: default; }
+  .send-btn svg { width: 16px; height: 16px; }
+
+  @media (max-width: 760px) {
+    .chat-app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  .admin-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 60px; }
+  .admin-wrap h1 { font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 6px; }
+  .admin-wrap .sub { font-size: 13px; color: #71747E; margin: 0 0 20px; line-height: 1.6; }
+  .admin-wrap input[type=password] {
+    width: 100%; background: #101116; border: 1px solid #1E1F26; border-radius: 10px;
+    color: #E6E7EB; font-size: 13.5px; padding: 11px 14px; outline: none; margin-bottom: 16px; font-family: inherit;
+  }
+  .admin-wrap input[type=password]:focus { border-color: #6366F1; }
+  .admin-wrap textarea {
+    width: 100%; min-height: 380px;
+    background: #101116; border: 1px solid #1E1F26; border-radius: 12px;
+    color: #E6E7EB; font-family: ui-monospace, 'SFMono-Regular', monospace;
+    font-size: 12.5px; line-height: 1.7; padding: 16px; resize: vertical; outline: none;
+  }
+  .admin-wrap textarea:focus { border-color: #6366F1; }
+  .admin-row { display: flex; gap: 10px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
+  .admin-row button {
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 11px 20px; border-radius: 10px; border: none; cursor: pointer;
+  }
+  .save-btn { background: linear-gradient(135deg, #6366F1, #4F46E5); color: #fff; }
+  .save-btn:hover { opacity: 0.92; }
+  .reset-btn { background: #14151A; color: #C9CCD4; border: 1px solid #23242C; }
+  .reset-btn:hover { border-color: #3A3DFF44; }
+  .admin-status { font-size: 12.5px; min-height: 16px; }
+  .admin-status.ok { color: #34D399; }
+  .admin-status.err { color: #F87171; }
+  .admin-note {
+    margin-top: 22px; font-size: 12px; color: #565A66; line-height: 1.7;
+    background: #101116; border: 1px solid #1C1D22; border-radius: 10px; padding: 12px 14px;
+  }
+
+  .navlink{font-size:13px;color:#8A8D97;cursor:pointer;padding:6px 10px;border-radius:8px;font-weight:500;transition:.2s}
+  .navlink:hover{color:#fff;background:rgba(255,255,255,.05)} .navlink.on{color:#fff;background:#1C1D22}
+  .rs{max-width:920px;margin:0 auto;padding:40px 24px 80px}
+  .rs-head{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:32px;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(34,211,238,.05));position:relative;overflow:hidden}
+  .rs-head h1{margin:0 0 6px;font-size:34px;font-weight:800;letter-spacing:-.02em;color:#fff}
+  .rs-head .role{color:#A5B4FC;font-weight:600;font-size:15px;margin-bottom:14px}
+  .rs-contact{display:flex;flex-wrap:wrap;gap:8px}
+  .rs-contact a,.rs-contact span{font-size:12.5px;color:#C5C7D0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:6px 11px;border-radius:999px}
+  .rs-contact a:hover{border-color:#6366F1;color:#fff}
+  .rs-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-size:13px;font-weight:600;padding:11px 18px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#E6E7EB;transition:.2s}
+  .btn:hover{background:rgba(255,255,255,.09)} .btn.pri{background:linear-gradient(135deg,#6366F1,#4F46E5);border:none;color:#fff}
+  .rs-grid{display:grid;grid-template-columns:1fr 300px;gap:28px;margin-top:28px}
+  @media(max-width:800px){.rs-grid{grid-template-columns:1fr}.rs-head h1{font-size:27px}}
+  .rs-sec{margin-bottom:30px}
+  .rs-sec h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:#818CF8;margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .rs-sec h2::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.07)}
+  .rs-sec p{margin:0;color:#B4B7C2;font-size:14.5px;line-height:1.7}
+  .card{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);border-radius:14px;padding:18px 20px;margin-bottom:14px;transition:.2s}
+  .card:hover{border-color:rgba(99,102,241,.45);transform:translateY(-2px)}
+  .card .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+  .card h3{margin:0;font-size:15px;color:#fff;font-weight:700}
+  .card .when{font-size:12px;color:#8A8D97;white-space:nowrap}
+  .card .sub{font-size:13px;color:#A5B4FC;margin:3px 0 10px}
+  .card ul{margin:0;padding-left:18px;color:#B4B7C2;font-size:13.5px;line-height:1.65} .card li{margin-bottom:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font-size:11.5px;color:#C7D2FE;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.25);padding:3px 9px;border-radius:999px}
+  .sk{margin-bottom:16px} .sk b{display:block;font-size:12px;color:#fff;margin-bottom:7px;font-weight:600}
+  .sk .chips{margin-top:0}
+  .ask{font-size:12px;color:#6EE7B7;cursor:pointer;margin-top:10px;display:inline-block} .ask:hover{text-decoration:underline}
+  .stat{display:flex;gap:10px;margin-bottom:28px}.stat div{flex:1;text-align:center;padding:14px 6px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+  .stat b{display:block;font-size:20px;color:#fff}.stat span{font-size:11px;color:#8A8D97}
+  @media print{body{background:#fff!important;color:#000!important}.nav,.rs-actions,.ask,#view-boot{display:none!important}.rs-head,.card,.stat div{background:#fff!important;border-color:#ccc!important}.rs-head h1,.card h3,.stat b,.sk b{color:#000!important}.rs-sec p,.card ul{color:#222!important}.rs{padding:0}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav" style="display:none;">
+  <div class="brand" id="brandHome"><div class="logo">Y</div>Yuv Bot</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a class="navlink" id="navResume">Resume</a><a class="navlink" id="navChat">Chat</a>
+    <button class="cta" id="topCta">Start chatting</button>
+  </div>
+</nav>
+
+<!-- ===== BOOT VIEW ===== -->
+<section class="view active" id="view-boot">
+  <div class="boot-screen">
+    <div class="boot-glow"></div>
+    <div class="boot-icon">
+      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#34D399" stroke-width="1.6"><rect x="4" y="9" width="16" height="10" rx="3"/><path d="M12 9V5"/><circle cx="12" cy="4" r="1.4" fill="#34D399" stroke="none"/><circle cx="8.5" cy="14" r="1.2" fill="#34D399" stroke="none"/><circle cx="15.5" cy="14" r="1.2" fill="#34D399" stroke="none"/><path d="M4 13H2M22 13h-2"/></svg>
+    </div>
+    <div class="boot-text" id="bootText">Calling Yuv Bot...</div>
+    <div class="boot-bar"><div class="boot-bar-fill" id="bootBarFill"></div></div>
+  </div>
+</section>
+
+<!-- ===== LANDING VIEW ===== -->
+<section class="view" id="view-landing">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="eyebrow"><span class="dot"></span>AI assistant, live now</div>
+    <h1>Meet <span>Yuv Bot</span></h1>
+    <p>Ask anything about Yuvanesh SV — his skills, internships, and projects. Grounded entirely in his real resume, no guesswork.</p>
+
+    <div class="float-field">
+      <div class="float-item f1" data-q="Give me a summary of Yuvanesh's background."><span class="dot" style="background:#818CF8"></span>Summary</div>
+      <div class="float-item f2" data-q="What technical skills does Yuvanesh have?"><span class="dot" style="background:#22D3EE"></span>Skills</div>
+      <div class="float-item f3" data-q="Walk me through Yuvanesh's internship experience."><span class="dot" style="background:#34D399"></span>Experience</div>
+      <div class="float-item f4" data-q="Tell me about the projects Yuvanesh has built."><span class="dot" style="background:#FBBF24"></span>Projects</div>
+      <div class="float-item f5" data-q="What is Yuvanesh's educational background?"><span class="dot" style="background:#F472B6"></span>Education</div>
+      <div class="float-item f6" data-q="Is Yuvanesh a good fit for a full stack developer role?"><span class="dot" style="background:#A78BFA"></span>Fit check</div>
+      <div class="center-wrap">
+        <div class="float-item center" id="askAnything">Ask Yuv Bot anything →</div>
+        <div class="float-item" id="viewResumeBtn" style="margin-top:10px;">View résumé ↗</div>
+      </div>
+    </div>
+  </div>
+  <div class="landing-footer">Yuv Bot — answers are grounded strictly in the uploaded resume.</div>
+</section>
+
+<!-- ===== RESUME VIEW ===== -->
+<section class="view" id="view-resume"><div class="rs">
+ <header class="rs-head"><div><h1>Yuvanesh SV</h1><div class="role">Full Stack Developer</div>
+  <div class="rs-contact"><a href="mailto:yuvaneshsv77@gmail.com">✉ yuvaneshsv77@gmail.com</a><a href="tel:+919791502238">☎ +91 97915 02238</a><span>⌖ Tirupur, Tamil Nadu</span></div></div>
+  <div class="rs-actions"><button class="btn pri" id="rsAsk">Chat with Yuv Bot</button><button class="btn" onclick="window.print()">Download PDF</button></div></header>
+ <div class="rs-grid"><main>
+  <div class="rs-sec"><h2>Summary</h2><p>Full Stack Developer with internship experience building responsive web applications using JavaScript (ES6+), React.js, Node.js, Express.js, HTML5, CSS3, and MySQL. Skilled in RESTful APIs, integrating frontend and backend systems, optimizing performance, and delivering scalable, user-centric solutions. Passionate about clean, maintainable code and modern web technologies.</p></div>
+  <div class="rs-sec"><h2>Experience</h2><div class="card"><div class="top"><h3>Full Stack Developer Intern</h3><span class="when">Jan 2025 – Feb 2025</span></div><div class="sub">Tech Volt Software Pvt. Ltd. · Coimbatore, India</div><ul><li>Developed responsive, reusable UI components using HTML5, CSS3, JavaScript (ES6+) and React.js, improving consistency and user experience.</li><li>Integrated frontend modules with RESTful APIs for seamless data communication and dynamic content rendering.</li></ul><span class="ask" data-q="Walk me through Yuvanesh's internship experience.">Ask Yuv Bot about this →</span></div></div>
+  <div class="rs-sec"><h2>Projects</h2>
+   <div class="card"><div class="top"><h3>MockPrep — AI Mock Learning Platform</h3><span class="when"></span></div><div class="chips"><span class="chip">React.js</span><span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">MySQL</span><span class="chip">Claude API</span></div><ul style="margin-top:12px"><li>Full-stack AI interview platform with 5 test tracks and MCQ + descriptive modes; Claude API evaluates answers in real time across 12 roles.</li><li>JWT authentication, streak-based engagement system, and Recharts analytics dashboard for score trends.</li></ul><span class="ask" data-q="Tell me about the MockPrep project.">Ask Yuv Bot about this →</span></div>
+   <div class="card"><div class="top"><h3>FinPay Backend</h3><span class="when">2025</span></div><div class="chips"><span class="chip">Node.js</span><span class="chip">TypeScript</span><span class="chip">Express.js</span><span class="chip">MySQL</span><span class="chip">Redis</span><span class="chip">Docker</span><span class="chip">JWT</span></div><ul style="margin-top:12px"><li>Production-ready FinTech transaction system on Clean Architecture (MVC + Service + Repository): wallets, transfers, payments, role-based access.</li><li>ACID-compliant transfer engine via Prisma $transaction with Redis caching, cutting database query load by ~60%.</li></ul><span class="ask" data-q="Tell me about the FinPay Backend project.">Ask Yuv Bot about this →</span></div>
+   <div class="card"><div class="top"><h3>Yuv Bot — AI Personal Assistant</h3><span class="when"></span></div><div class="chips"><span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">Anthropic Claude</span><span class="chip">SQLite</span></div><ul style="margin-top:12px"><li>AI assistant that grounds Claude in structured resume data for question answering.</li><li>Responsive glassmorphism chat interface with streaming answers and conversation logging.</li></ul><span class="ask" data-q="Tell me about the Yuv Bot project.">Ask Yuv Bot about this →</span></div>
+  </div></main>
+  <aside>
+   <div class="stat"><div><b>7.6</b><span>CGPA</span></div><div><b>3</b><span>Projects</span></div><div><b>60%</b><span>Less DB load</span></div></div>
+   <div class="rs-sec"><h2>Skills</h2><div class="sk"><b>Languages</b><div class="chips"><span class="chip">JavaScript (ES6+)</span><span class="chip">TypeScript</span><span class="chip">Java</span><span class="chip">Python</span><span class="chip">SQL</span></div></div><div class="sk"><b>Frontend</b><div class="chips"><span class="chip">React.js</span><span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">Bootstrap</span><span class="chip">Recharts</span><span class="chip">Responsive Design</span></div></div><div class="sk"><b>Backend</b><div class="chips"><span class="chip">Node.js</span><span class="chip">Express.js</span><span class="chip">Flask</span><span class="chip">Django</span><span class="chip">REST APIs</span><span class="chip">JWT Auth</span></div></div><div class="sk"><b>Database</b><div class="chips"><span class="chip">MySQL</span><span class="chip">SQLite</span><span class="chip">Redis</span><span class="chip">Prisma</span><span class="chip">Schema Design</span></div></div><div class="sk"><b>DevOps & Tools</b><div class="chips"><span class="chip">Docker</span><span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Postman</span><span class="chip">Google OAuth</span></div></div><div class="sk"><b>AI & APIs</b><div class="chips"><span class="chip">Anthropic Claude API</span><span class="chip">LLM-integrated apps</span></div></div><div class="sk"><b>Concepts</b><div class="chips"><span class="chip">OOP</span><span class="chip">DSA</span><span class="chip">DBMS</span><span class="chip">MVC</span><span class="chip">Clean Architecture</span></div></div></div>
+   <div class="rs-sec"><h2>Education</h2>
+    <div class="card"><h3>B.E. Computer Science &amp; Engineering</h3><div class="sub">KPR Institute of Engineering and Technology, Coimbatore</div><div class="when">2023 – 2027 · CGPA 7.6</div></div>
+    <div class="card"><h3>Higher Secondary (HSC)</h3><div class="sub">Jai Saradha Matriculation HSS, Tirupur</div><div class="when">2022 – 2023 · 90%</div></div></div>
+  </aside></div></div></section>
+
+<!-- ===== CHAT VIEW (also the "search" page) ===== -->
+<section class="view" id="view-chat">
+  <div class="chat-app">
+    <div class="sidebar">
+      <button class="back-link" id="backToHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to home
+      </button>
+
+      <div class="profile-card">
+        <div class="profile-avatar">YS</div>
+        <div class="name">Yuvanesh SV</div>
+        <div class="role">Full Stack Developer<br>Coimbatore, India</div>
+        <div class="status-pill"><span class="dot"></span>Available for opportunities</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">3</div><div class="lbl">Projects</div></div>
+        <div class="stat-box"><div class="num">1</div><div class="lbl">Internship</div></div>
+        <div class="stat-box"><div class="num">7.6</div><div class="lbl">CGPA</div></div>
+        <div class="stat-box"><div class="num">2027</div><div class="lbl">Graduating</div></div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:10px;">Suggested topics</div>
+        <div class="topic-list">
+          <div class="topic-item" data-q="Give me a summary of Yuvanesh's background.">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            Summary
+          </div>
+          <div class="topic-item" data-q="What technical skills does Yuvanesh have?">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            Skills
+          </div>
+          <div class="topic-item" data-q="Walk me through Yuvanesh's internship experience.">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            Experience
+          </div>
+          <div class="topic-item" data-q="Tell me about the projects Yuvanesh has built.">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+            Projects
+          </div>
+          <div class="topic-item" data-q="What is Yuvanesh's educational background?">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10L12 4 2 10l10 6 10-6z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg></div>
+            Education
+          </div>
+          <div class="topic-item" data-q="Is Yuvanesh a good fit for a full stack developer role?">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            Fit check
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">Answers are grounded strictly in the uploaded resume. <span id="adminDot" style="color:#25262c;cursor:default;">·</span></div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="title">Yuv Bot</div>
+          <div class="subtitle">Search for anything about experience, skills, or projects</div>
+        </div>
+        <div class="badge">● Grounded on resume</div>
+      </div>
+
+      <div class="thread" id="thread">
+        <div class="empty-state" id="emptyState">
+          <div class="big-avatar">YS</div>
+          <h2>Search Yuvanesh's resume</h2>
+          <p>Pick a topic on the left or type a question — every answer is sourced directly from his resume, served by the backend.</p>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="composer-inner">
+          <input id="input" type="text" placeholder="Search: e.g. What backend has he used?" />
+        </div>
+        <button class="send-btn" id="sendBtn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADMIN VIEW ===== -->
+<section class="view" id="view-admin">
+  <div class="admin-wrap">
+    <button class="back-link" id="backFromAdmin" style="margin-bottom:22px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to chat
+    </button>
+    <h1>Manage resume content</h1>
+    <p class="sub">Enter the admin password to load and edit the live resume. Saved changes apply to every visitor immediately.</p>
+    <input type="password" id="adminPassword" placeholder="Admin password" />
+    <div class="admin-row" style="margin-top:0;margin-bottom:16px;">
+      <button class="reset-btn" id="unlockAdminBtn">Unlock editor</button>
+      <span class="admin-status" id="unlockStatus"></span>
+    </div>
+    <textarea id="resumeTextarea" spellcheck="false" placeholder="Unlock with the admin password to load resume content..." disabled></textarea>
+    <div class="admin-row">
+      <button class="save-btn" id="saveResumeBtn" disabled>Save changes</button>
+      <span class="admin-status" id="adminStatus"></span>
+    </div>
+    <div class="admin-note">Stored server-side in the database — this update is visible to every visitor's chat, not just this browser.</div>
+  </div>
+</section>
+
+<script>
+const API = ''; // same-origin
+
+/* ---------------- view routing ---------------- */
+const views = {
+  boot: document.getElementById('view-boot'),
+  resume: document.getElementById('view-resume'),
+  landing: document.getElementById('view-landing'),
+  chat: document.getElementById('view-chat'),
+  admin: document.getElementById('view-admin')
+};
+const mainNav = document.getElementById('mainNav');
+const topCta = document.getElementById('topCta');
+
+function showView(name) {
+  Object.values(views).forEach(v => v.classList.remove('active'));
+  views[name].classList.add('active');
+  mainNav.style.display = (name === 'boot') ? 'none' : 'flex';
+  topCta.style.display = (name === 'landing') ? 'inline-block' : 'none';
+  document.querySelectorAll('.navlink').forEach(n=>n.classList.remove('on'));
+  const nl=document.getElementById(name==='resume'?'navResume':name==='chat'?'navChat':''); if(nl) nl.classList.add('on');
+  window.scrollTo(0, 0);
+  if (name === 'chat') { document.getElementById('input').focus(); }
+}
+
+function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+document.getElementById('brandHome').addEventListener('click', () => showView('landing'));
+document.getElementById('backToHome').addEventListener('click', () => showView('landing'));
+document.getElementById('backFromAdmin').addEventListener('click', () => showView('chat'));
+document.getElementById('adminDot').addEventListener('click', () => showView('admin'));
+topCta.addEventListener('click', () => showView('chat'));
+document.getElementById('navResume').addEventListener('click', () => showView('resume'));
+document.getElementById('navChat').addEventListener('click', () => showView('chat'));
+document.getElementById('viewResumeBtn').addEventListener('click', () => showView('resume'));
+document.getElementById('rsAsk').addEventListener('click', () => showView('chat'));
+document.querySelectorAll('#view-resume .ask').forEach(el => el.addEventListener('click', () => { showView('chat'); askResumeBot(el.getAttribute('data-q')); }));
+document.getElementById('askAnything').addEventListener('click', () => showView('chat'));
+
+document.querySelectorAll('#view-landing .float-item[data-q]').forEach(el => {
+  el.addEventListener('click', () => { showView('chat'); askResumeBot(el.getAttribute('data-q')); });
+});
+document.querySelectorAll('#view-chat .topic-item[data-q]').forEach(el => {
+  el.addEventListener('click', () => askResumeBot(el.getAttribute('data-q')));
+});
+
+/* ---------------- chat ---------------- */
+const thread = document.getElementById('thread');
+const emptyState = document.getElementById('emptyState');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+
+function extractTag(text) {
+  const match = text.match(/\[([a-z]+)\]\s*$/i);
+  if (match) return { clean: text.slice(0, match.index).trim(), tag: match[1] };
+  return { clean: text, tag: null };
+}
+
+function addUserMsg(text) {
+  if (emptyState) emptyState.style.display = 'none';
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function addBotMsg(text) {
+  const { clean, tag } = extractTag(text);
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = clean;
+  if (tag) {
+    const tagEl = document.createElement('div');
+    tagEl.className = 'tag';
+    tagEl.textContent = tag;
+    bubble.appendChild(tagEl);
+  }
+  row.appendChild(bubble);
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+  return row;
+}
+
+function addLoadingMsg() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.innerHTML = `<div class="bubble loading"><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+  return row;
+}
+
+async function askResumeBot(question) {
+  addUserMsg(question);
+  input.value = '';
+  sendBtn.disabled = true;
+
+  // Streaming bot bubble: starts empty, fills in as tokens arrive over SSE.
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  const textSpan = document.createElement('span');
+  const cursor = document.createElement('span');
+  cursor.className = 'stream-cursor';
+  bubble.appendChild(textSpan);
+  bubble.appendChild(cursor);
+  row.appendChild(bubble);
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+
+  let raw = '';
+
+  try {
+    const res = await fetch(API + '/api/chat', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: question })
+    });
+
+    if (!res.ok || !res.body) {
+      const data = await res.json().catch(() => ({}));
+      cursor.remove();
+      textSpan.textContent = (data.error || 'Something went wrong.');
+      return;
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop();
+
+      for (const evtBlock of events) {
+        const lines = evtBlock.split('\n');
+        let eventName = 'message';
+        let dataLine = '';
+        for (const l of lines) {
+          if (l.startsWith('event: ')) eventName = l.slice(7).trim();
+          if (l.startsWith('data: ')) dataLine = l.slice(6);
+        }
+        if (!dataLine) continue;
+        let payload;
+        try { payload = JSON.parse(dataLine); } catch { continue; }
+
+        if (eventName === 'delta') {
+          raw += payload.text;
+          const { clean } = extractTag(raw);
+          textSpan.textContent = clean;
+          thread.scrollTop = thread.scrollHeight;
+        } else if (eventName === 'error') {
+          cursor.remove();
+          textSpan.textContent = payload.error || 'Something went wrong.';
+        } else if (eventName === 'done') {
+          cursor.remove();
+          const { clean, tag } = extractTag(payload.answer || raw);
+          textSpan.textContent = clean;
+          if (tag) {
+            const tagEl = document.createElement('div');
+            tagEl.className = 'tag';
+            tagEl.textContent = tag;
+            bubble.appendChild(tagEl);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    cursor.remove();
+    textSpan.textContent = "Couldn't reach the server right now. Please try again in a moment.";
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener('click', () => { const q = input.value.trim(); if (q) askResumeBot(q); });
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const q = input.value.trim(); if (q) askResumeBot(q); } });
+
+/* ---------------- admin ---------------- */
+let adminPasswordCache = null;
+const resumeTextarea = document.getElementById('resumeTextarea');
+const saveResumeBtn = document.getElementById('saveResumeBtn');
+
+document.getElementById('unlockAdminBtn').addEventListener('click', async () => {
+  const pw = document.getElementById('adminPassword').value;
+  const statusEl = document.getElementById('unlockStatus');
+  try {
+    const res = await fetch(API + '/api/resume', { credentials: 'include' });
+    if (!res.ok) { statusEl.textContent = 'Could not load resume.'; statusEl.className = 'admin-status err'; return; }
+    const data = await res.json();
+    resumeTextarea.value = data.content;
+    resumeTextarea.disabled = false;
+    saveResumeBtn.disabled = false;
+    adminPasswordCache = pw;
+    statusEl.textContent = 'Loaded. Editing enabled.';
+    statusEl.className = 'admin-status ok';
+  } catch (err) {
+    statusEl.textContent = 'Could not reach the server.';
+    statusEl.className = 'admin-status err';
+  }
+});
+
+document.getElementById('saveResumeBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('adminStatus');
+  try {
+    const res = await fetch(API + '/api/resume', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPasswordCache || '' },
+      body: JSON.stringify({ content: resumeTextarea.value })
+    });
+    const data = await res.json();
+    if (!res.ok) { statusEl.textContent = data.error || 'Save failed — check the admin password.'; statusEl.className = 'admin-status err'; return; }
+    statusEl.textContent = 'Saved — live for all visitors.';
+    statusEl.className = 'admin-status ok';
+  } catch (err) {
+    statusEl.textContent = 'Could not reach the server.';
+    statusEl.className = 'admin-status err';
+  }
+});
+
+/* ---------------- boot animation ---------------- */
+const bootText = document.getElementById('bootText');
+const bootBarFill = document.getElementById('bootBarFill');
+const BOOT_STEPS = [
+  { text: 'Calling Yuv Bot...', pct: 30 },
+  { text: 'Connecting to Yuv Bot...', pct: 68 },
+  { text: 'AI mode activated', pct: 100 }
+];
+function runBootSequence() {
+  return new Promise((resolve) => {
+    let i = 0;
+    function step() {
+      const s = BOOT_STEPS[i];
+      bootText.textContent = s.text;
+      bootText.style.animation = 'none';
+      void bootText.offsetWidth;
+      bootText.style.animation = '';
+      bootBarFill.style.width = s.pct + '%';
+      i += 1;
+      if (i < BOOT_STEPS.length) {
+        setTimeout(step, 700);
+      } else {
+        setTimeout(resolve, 550);
+      }
+    }
+    step();
+  });
+}
+
+/* ---------------- initial route ---------------- */
+(async function init() {
+  await runBootSequence();
+  showView('landing');
+})();
+</script>
+</body>
+</html>
