@@ -2,12 +2,9 @@ services:
   - type: web
     name: yuv-bot
     env: docker
+    plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
-    disk:
-      name: yuv-bot-data
-      mountPath: /app/data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,5 +16,3 @@ services:
         sync: false
       - key: ANTHROPIC_MODEL
         value: claude-sonnet-4-6
-      - key: GOOGLE_CLIENT_ID
-        sync: false
